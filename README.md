@@ -16,7 +16,6 @@ This project is a vanilla Grails 4.0.4 project setup using:
 2. Adding a dependency `compile "org.grails.plugins:mongodb"`
 3. Run `./gradlew assemble dependencyInsight --dependency "org.mongodb:mongodb-driver"`
  for the following output:
-
 ```
 org.mongodb:mongodb-driver:3.8.2 (selected by rule)
    variant "compile" [
@@ -55,6 +54,63 @@ org.mongodb:mongodb-driver-core:3.8.2
      |    \--- org.grails.plugins:mongodb:7.0.1
      |         \--- compileClasspath (requested org.grails.plugins:mongodb)
      \--- org.grails:grails-datastore-gorm-mongodb-ext:7.0.1 (requested org.mongodb:mongodb-driver:3.10.0)
+          \--- org.grails.plugins:mongodb:7.0.1 (*)
+
+(*) - dependencies omitted (listed previously)
+
+A web-based, searchable dependency report is available by adding the --scan option.
+```
+4. This can be forced to a given version by using a configuration block as follows:
+```groovy
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        ModuleVersionSelector requestedDependency = details.requested
+        if (requestedDependency.name.startsWith('mongodb-driver') && requestedDependency.group.equals("org.mongodb")) {
+            details.useVersion("3.10.0")
+        }
+    }
+}
+```
+5. Running `./gradlew assemble dependencyInsight --dependency "org.mongodb:mongodb-driver"`
+   again then shows 3.10.0. This seems like a workaround more than anything.
+```
+org.mongodb:mongodb-driver:3.10.0 (selected by rule)
+   variant "compile" [
+      org.gradle.status              = release (not requested)
+      org.gradle.usage               = java-api
+      org.gradle.libraryelements     = jar (compatible with: classes+resources)
+      org.gradle.category            = library (not requested)
+
+      Requested attributes not found in the selected variant:
+         org.gradle.dependency.bundling = external
+         org.gradle.jvm.version         = 8
+   ]
+
+org.mongodb:mongodb-driver:3.10.0
++--- org.grails:grails-datastore-gorm-mongodb:7.0.1
+|    \--- org.grails.plugins:mongodb:7.0.1
+|         \--- compileClasspath (requested org.grails.plugins:mongodb)
+\--- org.grails:grails-datastore-gorm-mongodb-ext:7.0.1
+     \--- org.grails.plugins:mongodb:7.0.1 (*)
+
+org.mongodb:mongodb-driver-core:3.10.0 (selected by rule)
+   variant "compile" [
+      org.gradle.status              = release (not requested)
+      org.gradle.usage               = java-api
+      org.gradle.libraryelements     = jar (compatible with: classes+resources)
+      org.gradle.category            = library (not requested)
+
+      Requested attributes not found in the selected variant:
+         org.gradle.dependency.bundling = external
+         org.gradle.jvm.version         = 8
+   ]
+
+org.mongodb:mongodb-driver-core:3.10.0
+\--- org.mongodb:mongodb-driver:3.10.0
+     +--- org.grails:grails-datastore-gorm-mongodb:7.0.1
+     |    \--- org.grails.plugins:mongodb:7.0.1
+     |         \--- compileClasspath (requested org.grails.plugins:mongodb)
+     \--- org.grails:grails-datastore-gorm-mongodb-ext:7.0.1
           \--- org.grails.plugins:mongodb:7.0.1 (*)
 
 (*) - dependencies omitted (listed previously)

@@ -29,6 +29,15 @@ configurations {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        ModuleVersionSelector requestedDependency = details.requested
+        if (requestedDependency.name.startsWith('mongodb-driver') && requestedDependency.group.equals("org.mongodb")) {
+            details.useVersion("3.10.0")
+        }
+    }
+}
+
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compile "org.springframework.boot:spring-boot-starter-logging"
