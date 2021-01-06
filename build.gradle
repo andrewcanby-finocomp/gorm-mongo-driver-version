@@ -29,6 +29,8 @@ configurations {
     }
 }
 
+ext['mongodb.version']='3.10.0'
+
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compile "org.springframework.boot:spring-boot-starter-logging"
@@ -67,7 +69,7 @@ dependencies {
     testCompile "org.grails:views-json-testing-support"
     testCompile "org.hibernate.validator:hibernate-validator:6.0.20.Final"
 
-    compile "org.grails.plugins:mongodb"
+    compile "org.grails.plugins:mongodb:7.0.1"
 }
 
 bootRun {
